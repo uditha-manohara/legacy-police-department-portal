@@ -47,13 +47,13 @@ while ($row = $rule_breaks_result->fetch_assoc()) {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>LCPD Dashboard</title>
+    <title>LSPD Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
 </head>
 <body class="bg-light">
     <nav class="navbar navbar-dark bg-primary px-3">
-        <span class="navbar-brand">LCPD Dashboard</span>
+        <span class="navbar-brand">LSPD Dashboard</span>
         <div>
             <?php if ($user['is_admin']): ?>
                 <a href="add_member.php" class="btn btn-success btn-sm">+ Add Member</a>
@@ -66,7 +66,9 @@ while ($row = $rule_breaks_result->fetch_assoc()) {
                 </a>
             <?php endif; ?>
 
-            <a href="logout.php" class="btn btn-dark btn-sm">Logout</a>
+            <a href="uniform.php" class="btn btn-outline-light btn-sm me-2">Uniform</a>
+<a href="logout.php" class="btn btn-dark btn-sm">Logout</a>
+
         </div>
     </nav>
     <div class="container py-4">
