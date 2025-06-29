@@ -53,24 +53,26 @@ while ($row = $rule_breaks_result->fetch_assoc()) {
 </head>
 <body class="bg-light">
     <nav class="navbar navbar-dark bg-primary px-3">
-        <span class="navbar-brand">LSPD Dashboard</span>
-        <div>
-            <?php if ($user['is_admin']): ?>
-                <a href="add_member.php" class="btn btn-success btn-sm">+ Add Member</a>
-            <?php endif; ?>
+    <span class="navbar-brand">LSPD Dashboard</span>
+    <div>
+        <?php if ($user['is_admin']): ?>
+            <a href="add_member.php" class="btn btn-success btn-sm">+ Add Member</a>
+        <?php endif; ?>
 
-            <?php if (in_array($user['rank'], ['Chief', 'Deputy Chief', 'Commander', 'Lieutenant', 'Sergeant', 'Corporal', 'Legacy Staff'])): ?>
-                <a href="review_applications.php"
-                   class="btn btn-sm <?= $pending_app_count > 0 ? 'btn-warning' : 'btn-info' ?>">
-                    Review Applications<?= $pending_app_count > 0 ? " ($pending_app_count)" : "" ?>
-                </a>
-            <?php endif; ?>
+        <?php if (in_array($user['rank'], ['Chief', 'Deputy Chief', 'Commander', 'Lieutenant', 'Sergeant', 'Corporal', 'Legacy Staff'])): ?>
+            <a href="review_applications.php"
+               class="btn btn-sm <?= $pending_app_count > 0 ? 'btn-warning' : 'btn-info' ?>">
+                Review Applications<?= $pending_app_count > 0 ? " ($pending_app_count)" : "" ?>
+            </a>
+            
+        <?php endif; ?>
 
-            <a href="uniform.php" class="btn btn-outline-light btn-sm me-2">Uniform</a>
-<a href="logout.php" class="btn btn-dark btn-sm">Logout</a>
+        <a href="uniform.php" class="btn btn-outline-light btn-sm me-2">Uniform</a>
+        <a href="illegal_items.php" class="btn btn-outline-light btn-sm me-2">Illegal Items</a>
+        <a href="logout.php" class="btn btn-dark btn-sm">Logout</a>
+    </div>
+</nav>
 
-        </div>
-    </nav>
     <div class="container py-4">
         <table class="table table-bordered bg-white shadow">
             <thead>

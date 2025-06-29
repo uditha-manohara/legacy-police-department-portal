@@ -1,18 +1,45 @@
 <?php
 session_start();
 include 'db.php';
-$user = $_SESSION['user'];
-$id = (int)$_GET['id'];
 
-$app = $conn->query("SELECT * FROM applications WHERE id = $id")->fetch_assoc();
-if (!$app) die("Not found");
+$user = $_SESSION['user'] ?? null;
+if (!$user) die("❌ You must be logged in.");
 
-$conn->query("UPDATE applications SET status='Accepted', reviewer_id={$user['id']}, reviewed_at=NOW() WHERE id=$id");
+$id = intval($_GET['id']);
+if ($id <= 0) die("❌ Invalid application ID.");
 
-// Create user account
-$stmt = $conn->prepare("INSERT INTO users (ingame_name, username, password, rank, is_admin, callsign) VALUES (?, ?, ?, 'Cadet', 0, '')");
-$stmt->bind_param("sss", $app['full_name_ic'], $app['username'], $app['password']);
+$stmt = $conn->prepare("SELECT * FROM applications WHERE id = ?");
+$stmt->bind_param("i", $id);
 $stmt->execute();
+$app = $stmt->get_result()->fetch_assoc();
+if (!$app) die("❌ Application not found.");
 
-echo "Application Accepted and User Created. <a href='review_applications.php'>Go Back</a>";
+$conn->begin_transaction();
+
+try {
+    // Insert into backup table
+    $backup = $conn->prepare("
+        INSERT INTO applications_reviewed 
+        SELECT *, 'Accepted' AS action FROM applications WHERE id = ?");
+    $backup->bind_param("i", $id);
+    $backup->execute();
+
+    // Create new user
+    $create = $conn->prepare("INSERT INTO users (ingame_name, username, password, rank, is_admin, callsign) VALUES (?, ?, ?, 'Cadet', 0, '')");
+    $create->bind_param("sss", $app['full_name_ic'], $app['username'], $app['password']);
+    if (!$create->execute()) throw new Exception("User creation failed");
+
+    // Delete original application
+    $del = $conn->prepare("DELETE FROM applications WHERE id = ?");
+    $del->bind_param("i", $id);
+    $del->execute();
+
+    $conn->commit();
+
+    echo "✅ Application Accepted & User Created. <a href='application_log.php'>Go to Log</a>";
+} catch (Exception $e) {
+    $conn->rollback();
+    error_log("accept.php error: " . $e->getMessage());
+    die("❌ Error: " . $e->getMessage());
+}
 ?>
